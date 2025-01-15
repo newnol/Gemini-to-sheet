@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 import google.generativeai as genai
 import json
 import base64
+import json
 from google.ai.generativelanguage_v1beta.types import content
 
 # Đọc ảnh và chuyển sang base64
@@ -71,18 +72,20 @@ chat_session = model.start_chat(
         {"role": "model", "parts": ["{\"amount\": 80000, \"category\": \"drinks\", \"note\": \"street tea\"}"]},
     ]
 )
-
-files = [
-  upload_to_gemini("test.jpg", mime_type="image/jpg"),
-]
-
-
 image_path = "test.jpg"
+# lấy extension của file
+ext = os.path.splitext(image_path)[1]
+
+# files = [
+#    upload_to_gemini(image_path, mime_type=f"image/{ext[1:]}"),
+# ] 
+
+
 
 # Gửi câu hỏi mới để lấy dữ liệu chi tiêu
-encoded_image = encode_image_to_base64(image_path)
-response = chat_session.send_message(files[0])
-
+# encoded_image = encode_image_to_base64(image_path)
+# response = chat_session.send_message(files[0])
+response = chat_session.send_message("tôi cho tiền 5 đứa bạn mỗi đứa 10k")
 
 # In kết quả phản hồi từ Gemini
 print("Phản hồi từ Gemini:", response.text)
@@ -100,7 +103,7 @@ except json.JSONDecodeError:
 
 # Gửi dữ liệu lên Google Sheets qua Google Apps Script nếu dữ liệu hợp lệ
 if data:
-    url = 'https://script.google.com/macros/s/AKfycbzrmQAPgc1BOlX4544KOHQ_shRn4SGYECXR-_6LObZe-NXtHnJ0AELn-Eag_guYTDsacg/exec'
+    url = 'https://script.google.com/macros/s/AKfycbwrnLikw6-OvK4mj7VCPqukDuiPK3ucZPQNtYYDkm2XoaSeo0g9FLhJaco3Ajuy_qn2Gg/exec'
     
     try:
         responseData = requests.post(url, json=data)
