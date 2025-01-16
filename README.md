@@ -1,9 +1,9 @@
-
+```markdown
 ---
 
 # 📊 Expense Tracker with Gemini
 
-### Ứng dụng ghi chép chi tiêu cá nhân thông minh tích hợp **Gemini AI** và **Google Sheets**.
+### Ứng dụng ghi chép và phân tích chi tiêu cá nhân thông minh tích hợp **Gemini AI** và **Google Sheets**.
 
 ---
 
@@ -12,16 +12,18 @@
 ✅ **Ghi chép chi tiêu nhanh chóng** bằng văn bản hoặc hình ảnh.  
 ✅ **Phân loại tự động** các khoản chi tiêu (ăn uống, xăng xe, mua sắm, v.v.).  
 ✅ **Lưu trữ dữ liệu an toàn** trên **Google Sheets**.  
-✅ **Giao diện trực quan** với **Tkinter**.  
+✅ **Phân tích dữ liệu chi tiêu chuyên sâu** với **Gemini AI**.  
+✅ **Giao diện trực quan** với **Tkinter**, hỗ trợ **nhấn Enter để gửi** và **hiển thị loading** khi xử lý.  
 
+---
 
 ## 🛠 Công Nghệ Sử Dụng
 
 - **Python 3.x** 🐍  
 - **Tkinter** – Tạo giao diện người dùng.  
-- **Google Generative AI (Gemini API)** – Xử lý dữ liệu đầu vào.  
-- **Google Sheets API** – Lưu trữ dữ liệu.  
-- **Requests** – Gửi dữ liệu qua API.  
+- **Google Generative AI (Gemini API)** – Xử lý và phân tích dữ liệu.  
+- **Google Sheets API** – Lưu trữ và truy xuất dữ liệu.  
+- **Requests** – Giao tiếp với API.  
 - **Python-dotenv** – Quản lý biến môi trường.  
 
 ---
@@ -70,9 +72,10 @@ python app/main.py
 
 1. **Nhập nội dung chi tiêu** vào ô văn bản.  
    _Ví dụ:_ `Nay ăn sáng 25k`  
-2. **Nhấn "Send"** để gửi.  
-3. **Nhấn "Upload Image"** để tải ảnh hóa đơn hoặc ảnh liên quan.  
-4. Dữ liệu sẽ **phân loại và lưu vào Google Sheets**.
+2. **Nhấn "📨 Gửi"** hoặc **nhấn Enter** để gửi.  
+3. **Nhấn "📷 Tải Ảnh"** để tải ảnh hóa đơn hoặc ảnh liên quan.  
+4. **Nhấn "📊 Phân Tích Dữ Liệu"** để Gemini phân tích toàn bộ chi tiêu.  
+5. Dữ liệu sẽ **phân loại và lưu vào Google Sheets**.
 
 ---
 
@@ -81,20 +84,44 @@ python app/main.py
 ```
 expense_tracker/
 ├── app/
-│   ├── config.py          # Quản lý biến môi trường
-│   ├── gemini.py          # Tích hợp API Gemini
-│   ├── google_sheets.py   # Gửi dữ liệu lên Google Sheets
-│   ├── gui.py             # Giao diện Tkinter
-│   └── main.py            # Điểm khởi động ứng dụng
+│   ├── config.py            # Quản lý biến môi trường
+│   ├── gemini.py            # Tích hợp API Gemini (phân tích & ghi chép)
+│   ├── google_sheets.py     # Gửi & lấy dữ liệu từ Google Sheets
+│   ├── gui.py               # Giao diện Tkinter
+│   └── main.py              # Điểm khởi động ứng dụng
 │
-├── tests/                 # Thư mục kiểm thử
+├── tests/                   # Thư mục kiểm thử
 │   ├── test_gemini.py
 │   └── test_google_sheets.py
 │
-├── .env                   # Biến môi trường (KHÔNG commit)
-├── .gitignore             # File/thư mục không đẩy lên Git
-├── README.md              # File mô tả dự án
-└── requirements.txt       # Danh sách thư viện cần cài
+├── .env                     # Biến môi trường (KHÔNG commit)
+├── .gitignore               # File/thư mục không đẩy lên Git
+├── README.md                # File mô tả dự án
+└── requirements.txt         # Danh sách thư viện cần cài
+```
+
+---
+
+## 📊 Ví Dụ Phân Tích Dữ Liệu
+
+**Nhập:**  
+```
+Nay ăn sáng 25k
+```
+
+**Bot trả lời:**  
+```json
+{
+  "note": "ăn sáng",
+  "category": "breakfast",
+  "amount": 25000
+}
+```
+
+**Phân tích dữ liệu:**  
+```
+📊 Tổng chi tiêu tháng này tập trung vào ăn uống (60%), di chuyển (25%), và mua sắm (15%).
+👉 Đề xuất: Giảm chi tiêu ăn uống để tiết kiệm hơn.
 ```
 
 ---
@@ -108,15 +135,19 @@ expense_tracker/
 ### 2. **Dữ liệu lưu ở đâu?**  
 - Dữ liệu được lưu trực tiếp lên **Google Sheets** theo `SHEET_ID`.
 
-### 3. **Có hỗ trợ đa ngôn ngữ không?**  
-- Hiện tại ứng dụng hỗ trợ **Tiếng Việt**. Có thể mở rộng thêm ngôn ngữ khác.
+### 3. **Phân tích dữ liệu như thế nào?**  
+- Nhấn **📊 Phân Tích Dữ Liệu** để lấy dữ liệu từ Google Sheets và gửi cho Gemini AI phân tích.
+
+### 4. **Ứng dụng có hỗ trợ đa ngôn ngữ không?**  
+- Hiện tại ứng dụng hỗ trợ **Tiếng Việt**. Sẽ mở rộng thêm các ngôn ngữ khác trong tương lai.
 
 ---
 
 ## 📈 Kế Hoạch Phát Triển
 
-- [ ] **Báo cáo thống kê chi tiêu hàng tuần/tháng**.  
-- [ ] **Tích hợp chatbot trực tuyến**.  
+- [x] **Phân loại chi tiêu tự động**.  
+- [x] **Phân tích dữ liệu chi tiêu với Gemini AI**.  
+- [ ] **Báo cáo thống kê chi tiêu theo tuần/tháng**.  
 - [ ] **Phiên bản di động (Android/iOS)**.  
 
 ---
@@ -152,3 +183,4 @@ Dự án được cấp phép theo [MIT License](LICENSE).
 ```
 
 ---
+```
