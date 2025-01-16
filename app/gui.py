@@ -1,34 +1,43 @@
-import tkinter as tk
-from tkinter import scrolledtext, filedialog
+import customtkinter as ctk
+from tkinter import filedialog
 
 def setup_gui(process_message, upload_image, analyze_data):
-    root = tk.Tk()
+    ctk.set_appearance_mode("Light")  # Light / Dark / System
+    ctk.set_default_color_theme("blue")  # green, dark-blue, blue
+
+    root = ctk.CTk()
     root.title("💸 Expense Tracker with Gemini AI")
-    root.geometry("500x650")
-    root.configure(bg="#f0f0f0")
+    root.geometry("900x700")  # 📏 Mở rộng chiều ngang
 
-    header = tk.Label(root, text="Expense Tracker 💰", font=("Helvetica", 18, "bold"), bg="#4CAF50", fg="white", pady=10)
-    header.pack(fill=tk.X)
+    # Header
+    header = ctk.CTkLabel(root, text="Expense Tracker 💰", font=("Helvetica", 26, "bold"))
+    header.pack(pady=20)
 
-    display_area = scrolledtext.ScrolledText(root, wrap=tk.WORD, width=60, height=25, font=("Helvetica", 10))
-    display_area.pack(padx=10, pady=10)
+    # Khu vực hiển thị chat (Mở rộng ngang)
+    display_area = ctk.CTkTextbox(root, width=850, height=450, font=("Helvetica", 12))
+    display_area.pack(pady=10)
     display_area.configure(state='disabled')
 
-    entry_frame = tk.Frame(root, bg="#f0f0f0")
-    entry_frame.pack(padx=10, pady=5, fill=tk.X)
+    # Khung nhập liệu
+    entry_frame = ctk.CTkFrame(root)
+    entry_frame.pack(pady=10)
 
-    entry = tk.Entry(entry_frame, width=40, font=("Helvetica", 12))
-    entry.pack(side=tk.LEFT, padx=(0, 10), fill=tk.X, expand=True)
+    entry = ctk.CTkEntry(entry_frame, width=600, font=("Helvetica", 12))
+    entry.pack(side="left", padx=10, pady=10)
 
-    send_button = tk.Button(entry_frame, text="📨 Gửi", width=8, bg="#4CAF50", fg="white", command=process_message)
-    send_button.pack(side=tk.LEFT)
+    send_button = ctk.CTkButton(entry_frame, text="📨 Gửi", width=80, command=process_message)
+    send_button.pack(side="left", padx=5)
 
-    analyze_button = tk.Button(root, text="📊 Phân Tích Dữ Liệu", width=20, bg="#FF9800", fg="white", command=analyze_data)
+    upload_button = ctk.CTkButton(root, text="📷 Tải Ảnh", width=150, command=upload_image)
+    upload_button.pack(pady=5)
+
+    analyze_button = ctk.CTkButton(root, text="📊 Phân Tích Dữ Liệu", width=150, command=analyze_data)
     analyze_button.pack(pady=5)
 
-    spinner_label = tk.Label(root, text="", font=("Helvetica", 10, "italic"), fg="gray", bg="#f0f0f0")
-    spinner_label.pack()
+    spinner_label = ctk.CTkLabel(root, text="", font=("Helvetica", 10))
+    spinner_label.pack(pady=5)
 
+    # Nhấn Enter để gửi
     def enter_pressed(event):
         process_message()
 

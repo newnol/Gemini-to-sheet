@@ -1,4 +1,3 @@
-import tkinter as tk
 import json
 import threading
 from config import SHEET_ID, GEMINI_API_KEY
@@ -6,27 +5,33 @@ from gemini import configure_gemini
 from google_sheets import get_sheet_data, send_to_google_sheets
 from gui import setup_gui
 
-# ⚡ Mặc định là chế độ chat
+# Cấu hình Gemini mặc định
 model = configure_gemini(GEMINI_API_KEY, mode="chat")
 chat_session = model.start_chat(history=[])
 
 def show_spinner(message="🔄 Đang xử lý..."):
-    spinner_label.config(text=message)
+    spinner_label.configure(text=message)
     spinner_label.update()
 
 def hide_spinner():
-    spinner_label.config(text="")
+    spinner_label.configure(text="")
     spinner_label.update()
+
+def send_bot_message(message):
+    display_area.configure(state='normal')
+    display_area.insert("end", f"🤖 Bot: {message}\n\n")
+    display_area.configure(state='disabled')
 
 def process_message():
     user_msg = entry.get().strip()
     if not user_msg:
+        send_bot_message("⚠️ Bạn chưa nhập nội dung.")
         return
 
     display_area.configure(state='normal')
-    display_area.insert(tk.END, f"🧑‍💻 Bạn: {user_msg}\n")
+    display_area.insert("end", f"🧑‍💻 Bạn: {user_msg}\n\n")
     display_area.configure(state='disabled')
-    entry.delete(0, tk.END)
+    entry.delete(0, "end")
 
     threading.Thread(target=bot_response, args=(user_msg,)).start()
 
@@ -36,38 +41,27 @@ def bot_response(user_msg):
     try:
         data = json.loads(response.text.strip("`"))
         hide_spinner()
-        display_area.configure(state='normal')
-        display_area.insert(tk.END, f"🤖 Bot: {data}\n")
-        display_area.configure(state='disabled')
+        send_bot_message(f"{data}")
         send_to_google_sheets(data, SHEET_ID)
+        send_bot_message("✅ Dữ liệu đã được lưu vào Google Sheets.")
     except json.JSONDecodeError:
         hide_spinner()
-        display_area.insert(tk.END, "🤖 Bot: Lỗi dữ liệu.\n")
+        send_bot_message("❌ Bot không hiểu yêu cầu của bạn. Vui lòng thử lại.")
 
 def analyze_data():
-    global model, chat_session
-
-    # 🔄 Chuyển sang chế độ phân tích
-    model = configure_gemini(GEMINI_API_KEY, mode="analysis")
-    chat_session = model.start_chat(history=[])
-
     show_spinner("📊 Đang phân tích dữ liệu...")
     threading.Thread(target=analyze_data_thread).start()
 
 def analyze_data_thread():
     data = get_sheet_data(SHEET_ID)
     if data:
-        # Gửi dữ liệu cho Gemini phân tích
-        prompt = f"Phân tích dữ liệu chi tiêu sau và đưa ra nhận xét chi tiết:\n{json.dumps(data, indent=2)}"
-        response = chat_session.send_message(prompt)
+        response = chat_session.send_message(f"Phân tích dữ liệu sau:\n{json.dumps(data)}")
         hide_spinner()
-        display_area.configure(state='normal')
-        display_area.insert(tk.END, f"📊 Kết quả phân tích:\n{response.text}\n")
-        display_area.configure(state='disabled')
+        send_bot_message(f"📊 Kết quả phân tích:\n{response.text}")
     else:
         hide_spinner()
-        display_area.insert(tk.END, "❌ Không lấy được dữ liệu từ Google Sheets.\n")
+        send_bot_message("❌ Không lấy được dữ liệu từ Google Sheets.")
 
-# 🚀 Khởi động GUI
+# Khởi động giao diện
 root, display_area, entry, spinner_label = setup_gui(process_message, None, analyze_data)
 root.mainloop()

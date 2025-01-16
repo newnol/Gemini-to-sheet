@@ -6,3 +6,5 @@ tempCodeRunnerFile.py
 data.json
 test
 __pycache__
+.repomixignore
+repomix.config.json
