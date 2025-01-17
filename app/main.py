@@ -1,7 +1,10 @@
 import json
 import threading
+from datetime import datetime
+from tkinter import filedialog, messagebox
+import customtkinter as ctk
 from config import SHEET_ID, GEMINI_API_KEY
-from gemini import configure_gemini
+from gemini import configure_gemini 
 from google_sheets import get_sheet_data, send_to_google_sheets
 from gui import setup_gui
 
@@ -61,7 +64,45 @@ def analyze_data_thread():
     else:
         hide_spinner()
         send_bot_message("❌ Không lấy được dữ liệu từ Google Sheets.")
+def upload_image():
+    """Handle image upload and processing"""
+    try:
+        file_path = filedialog.askopenfilename(
+            title="Chọn ảnh",
+            filetypes=[
+                ("Image files", "*.png *.jpg *.jpeg *.gif *.bmp *.webp")
+            ]
+        )
+        
+        if not file_path:
+            return
+        
+        file = file_path.split("/")[-1]
 
-# Khởi động giao diện
-root, display_area, entry, spinner_label = setup_gui(process_message, None, analyze_data)
-root.mainloop()
+        show_spinner("📤 Đang tải ảnh lên...")
+        image_button.configure(text=f"📸 Ảnh: {file_path.split('/')[-1]}")
+        
+        # TODO: Add image processing logic here
+        hide_spinner()
+        send_bot_message(f"✅ Đã chọn ảnh: {file[0]}")
+        
+    except Exception as e:
+        hide_spinner()
+        send_bot_message(f"❌ Lỗi khi tải ảnh: {str(e)}")
+        image_button.configure(text="📸 Chọn ảnh")
+
+
+# Update main section to include image_button
+if __name__ == "__main__":
+    root, display_area_widget, entry_widget, spinner_label_widget, image_btn = setup_gui(
+        process_message=process_message,
+        upload_image=upload_image, 
+        analyze_data=analyze_data
+    )
+    
+    display_area = display_area_widget
+    entry = entry_widget
+    spinner_label = spinner_label_widget
+    image_button = image_btn
+    
+    root.mainloop()

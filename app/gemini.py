@@ -1,6 +1,15 @@
 import google.generativeai as genai
 from google.ai.generativelanguage_v1beta.types import content
 
+def upload_to_gemini(path, mime_type=None):
+  """Uploads the given file to Gemini.
+
+  See https://ai.google.dev/gemini-api/docs/prompting_with_media
+  """
+  file = genai.upload_file(path, mime_type=mime_type)
+  print(f"Uploaded file '{file.display_name}' as: {file.uri}")
+  return file
+
 def configure_gemini(api_key, mode="chat"):
     genai.configure(api_key=api_key)
 
@@ -23,7 +32,7 @@ def configure_gemini(api_key, mode="chat"):
         }
     elif mode == "analysis":
         generation_config = {
-            "temperature": 0.3,        # Giảm sáng tạo, tăng tính logic
+            "temperature": 1,        # Giảm sáng tạo, tăng tính logic
             "top_p": 0.85,
             "top_k": 50,
             "max_output_tokens": 8192,
